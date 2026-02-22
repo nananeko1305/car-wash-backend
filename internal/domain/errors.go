@@ -10,3 +10,4 @@ type AppError struct {
 var ErrEmailAlreadyExists = errors.New("email already exists")
 var ErrIncorrectPassword = errors.New("incorect password")
 var ErrUserNotFound = errors.New("user not found")
+var ErrInvalidToken = errors.New("invalid token")

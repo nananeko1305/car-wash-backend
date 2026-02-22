@@ -13,6 +13,7 @@ import (
 	"github.com/nananeko1305/car-wash-backend/internal/database"
 	"github.com/nananeko1305/car-wash-backend/internal/db"
 	"github.com/nananeko1305/car-wash-backend/internal/handler"
+	mw "github.com/nananeko1305/car-wash-backend/internal/middleware"
 	"github.com/nananeko1305/car-wash-backend/internal/repository"
 	"github.com/nananeko1305/car-wash-backend/internal/service"
 )
@@ -60,8 +61,11 @@ func apiRouter(authHandler *handler.AuthHandler, userHandler *handler.UserHandle
 	apiRouter.Post("/login", authHandler.Login)
 
 	// USERS
-	apiRouter.Get("/users", userHandler.GetUsers)
-	apiRouter.Post("/users", userHandler.CreateUser)
+	apiRouter.Group(func(r chi.Router) {
+		r.Use(mw.AuthMiddleware)
+		r.Get("/users", userHandler.GetUsers)
+		r.Post("/users", userHandler.CreateUser)
+	})
 
 	return apiRouter
 }

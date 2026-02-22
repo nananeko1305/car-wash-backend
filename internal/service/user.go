@@ -6,8 +6,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/nananeko1305/car-wash-backend/internal/db"
 	"github.com/nananeko1305/car-wash-backend/internal/domain"
+	"github.com/nananeko1305/car-wash-backend/internal/jwt"
 	"github.com/nananeko1305/car-wash-backend/internal/repository"
-	"github.com/nananeko1305/car-wash-backend/internal/token"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -63,7 +63,7 @@ func (userService *UserService) Login(ctx context.Context, request domain.LoginU
 		return "", domain.ErrIncorrectPassword
 	}
 
-	generatedToken, err := token.GenerateJWTToken(user)
+	generatedToken, err := jwt.GenerateJwtToken(user)
 	if err != nil {
 		return "", err
 	}
