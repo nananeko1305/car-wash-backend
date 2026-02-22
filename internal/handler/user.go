@@ -21,6 +21,7 @@ func InitUserHandler(userService *service.UserService) *UserHandler {
 }
 
 func (handler *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
+
 	w.Header().Set("Content-Type", "application/json")
 	users, err := handler.userService.GetAllUsers(r.Context())
 	if err != nil {
