@@ -55,14 +55,59 @@ func (ns NullAppointmentStatus) Value() (driver.Value, error) {
 	return string(ns.AppointmentStatus), nil
 }
 
+type ServiceType string
+
+const (
+	ServiceTypeWashing            ServiceType = "washing"
+	ServiceTypeVacuuming          ServiceType = "vacuuming"
+	ServiceTypeWashingAndVacuming ServiceType = "washing_and_vacuming"
+	ServiceTypeDeepCleaning       ServiceType = "deep_cleaning"
+)
+
+func (e *ServiceType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ServiceType(s)
+	case string:
+		*e = ServiceType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ServiceType: %T", src)
+	}
+	return nil
+}
+
+type NullServiceType struct {
+	ServiceType ServiceType
+	Valid       bool // Valid is true if ServiceType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullServiceType) Scan(value interface{}) error {
+	if value == nil {
+		ns.ServiceType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ServiceType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullServiceType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ServiceType), nil
+}
+
 type Appointment struct {
-	ID        int32
-	DateTime  pgtype.Timestamptz
-	CarName   pgtype.Text
-	Status    NullAppointmentStatus
-	UserID    pgtype.Int4
-	CreatedAt pgtype.Timestamptz
-	UpdatedAt pgtype.Timestamptz
+	ID          int32
+	DateTime    pgtype.Timestamptz
+	CarName     pgtype.Text
+	Status      NullAppointmentStatus
+	UserID      pgtype.Int4
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+	ServiceType NullServiceType
 }
 
 type User struct {
